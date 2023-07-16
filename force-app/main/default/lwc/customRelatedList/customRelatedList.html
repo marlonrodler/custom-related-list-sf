@@ -1,0 +1,45 @@
+<template>
+    <h2 id="element-with-table-label" class="slds-text-heading_medium slds-m-bottom_xx-small">Example data table of
+        Opportunities</h2>
+    <h3 id="other-element-with-table-label" class="slds-text-title slds-m-bottom_small">Using
+        <code>aria-labelledby</code>, instead of aria-label
+    </h3>
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+        aria-labelledby="element-with-table-label other-element-with-table-label">
+        <thead>
+            <template if:true={fieldsToDisplay}>
+                <tr class="slds-line-height_reset">
+                    <template for:each={fieldsToDisplay} for:item="field">
+                        <th key={field.key} class="" scope="col">
+                            <div class="slds-truncate" title={field.value}>{field.value}</div>
+                        </th>
+                    </template>
+                </tr>
+            </template>
+        </thead>
+        <tbody>
+            <template if:true={records}>
+                <template for:each={records} for:item="record">
+                    <tr key={record} class="slds-hint-parent">
+                        <template for:each={record} for:item="item">
+                            <td key={item}>
+                                <div class="slds-truncate" title={item}>{item}</div>
+                            </td>
+                        </template>
+                    </tr>
+                </template>
+
+            </template>
+            <!-- <tr class="slds-hint-parent">
+                <th data-label="Opportunity Name" scope="row">
+                    <div class="slds-truncate" title="Cloudhub">
+                        <a href="#" tabindex="-1">Cloudhub</a>
+                    </div>
+                </th>
+                <td data-label="Account Name">
+                    <div class="slds-truncate" title="Cloudhub">Cloudhub</div>
+                </td>
+            </tr> -->
+        </tbody>
+    </table>
+</template>
