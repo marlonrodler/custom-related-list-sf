@@ -1,7 +1,7 @@
 public without sharing class CustomRelatedListController {
     
     @AuraEnabled
-    public static CustomRelatedListService getRelatedListFields(String objectName, List<String> relatedListNames){
+    public static CustomRelatedListMapper getRelatedListFields(String objectName, List<String> relatedListNames){
         try {
             return CustomRelatedListService.getRelatedListFields(objectName, relatedListNames);
         } catch (Exception e) {

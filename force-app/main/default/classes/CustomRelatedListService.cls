@@ -1,20 +1,11 @@
 public without sharing class CustomRelatedListService {
 
-    @AuraEnabled public Map<String,String> mapRelatedListFields {get;set;}
-    @AuraEnabled public List<String> relatedListApiNames {get;set;}
-
-    public CustomRelatedListService(Map<String,String> relatedListFields, List<String> relatedListApiNames){
-        this.mapRelatedListFields = relatedListFields;
-        this.relatedListApiNames = relatedListApiNames;
-    }
-
-    public static CustomRelatedListService getRelatedListFields(String objectName, List<String> relatedListNames) {
+    public static CustomRelatedListMapper getRelatedListFields(String objectName, List<String> relatedListNames) {
         Map<String,String> relatedListFields = new Map<String,String>();
         List<String> relatedListApiNames = new List<String>();
         
         for (String item : relatedListNames) {
             Integer countMatches = 0;
-            Schema.DescribeFieldResult fieldResult;
 
             if(item.contains('.')){
                 countMatches = item.countMatches('.');
@@ -36,22 +27,26 @@ public without sharing class CustomRelatedListService {
                 objectName = 'User';
 
             relatedListApiNames.add(objectName);
-            Schema.SObjectType convertType = Schema.getGlobalDescribe().get(objectName);
-            Map<String,Schema.SObjectField> mfields = convertType.getDescribe().fields.getMap();
 
-            if(countMatches == 1)
-                fieldResult = mfields.get(item.substring(item.indexOf('.') + 1)).getDescribe();
-            else if(countMatches > 1)
-                fieldResult = mfields.get(item.substring(item.lastIndexOf('.') + 1)).getDescribe();
-            else
-                fieldResult = mfields.get(item).getDescribe();
-            
-            relatedListFields.put(item, fieldResult.getLabel());
+            try{
+                Schema.SObjectType convertType = Schema.getGlobalDescribe().get(objectName);
+                Map<String,Schema.SObjectField> mfields = convertType.getDescribe().fields.getMap();
+                Schema.DescribeFieldResult fieldResult;
+
+                if(countMatches == 1)
+                    fieldResult = mfields.get(item.substring(item.indexOf('.') + 1)).getDescribe();
+                else if(countMatches > 1)
+                    fieldResult = mfields.get(item.substring(item.lastIndexOf('.') + 1)).getDescribe();
+                else
+                    fieldResult = mfields.get(item).getDescribe();
+                
+                relatedListFields.put(item, fieldResult.getLabel());
+            }catch(Exception e){
+                return new CustomRelatedListMapper(null, null, 'The object ' + item + ' does not exist. Please check the related list name.');
+            }
         }
 
-        CustomRelatedListService relatedListService = new CustomRelatedListService(relatedListFields, relatedListApiNames);
-
-        return relatedListService;
+        return new CustomRelatedListMapper(relatedListFields, relatedListApiNames, '');
     }
 
     public static List<SObject> getRecords(Id recordId, String objectName, List<String> relatedListNames){

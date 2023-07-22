@@ -29,12 +29,15 @@ export default class CustomRelatedList extends LightningElement {
     async handlerGetRelatedListFields(relatedObject, fields) {
         try {
             let result = await getRelatedListFields({ objectName: relatedObject, relatedListNames: fields });
+            if(result.error) {
+                console.log(result.error);
+            }
             for (var key in result.mapRelatedListFields) {
                 this.fieldsToDisplay.push({ value: result.mapRelatedListFields[key], key: key });
             }
             this.relatedListApiNames = result.relatedListApiNames;
         } catch (error) {
-            console.error(error);
+            console.log(error);
         }
     }
 
